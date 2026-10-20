@@ -839,10 +839,13 @@ do
       local enabled_filetypes = {
         lua = true,
         blade = true,
+        php = true,
         -- python = true,
       }
-      if enabled_filetypes[vim.bo[bufnr].filetype] then
-        return { timeout_ms = 500 }
+      local ft = vim.bo[bufnr].filetype
+      if enabled_filetypes[ft] then
+        -- pint (PHP) needs longer to start up than the default timeout
+        return { timeout_ms = ft == 'php' and 3000 or 500 }
       else
         return nil
       end
@@ -854,6 +857,8 @@ do
     formatters_by_ft = {
       -- rust = { 'rustfmt' },
       blade = { 'blade-formatter' },
+      -- Laravel Pint from the project's vendor/bin; never fall back to intelephense's formatting
+      php = { 'pint', lsp_format = 'never' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --
