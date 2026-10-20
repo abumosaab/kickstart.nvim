@@ -124,6 +124,15 @@ do
   --  See `:help 'clipboard'`
   vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 
+  -- WSL: use win32yank (in ~/.local/bin) to talk to the Windows clipboard
+  if vim.fn.has 'wsl' == 1 then vim.g.clipboard = 'win32yank' end
+
+  -- Disable remote-plugin providers that aren't used (also silences :checkhealth)
+  vim.g.loaded_perl_provider = 0
+  vim.g.loaded_ruby_provider = 0
+  vim.g.loaded_node_provider = 0
+  vim.g.loaded_python3_provider = 0
+
   -- Enable break indent
   vim.o.breakindent = true
 
@@ -737,6 +746,7 @@ do
     -- gopls = {},
     -- pyright = {},
     -- tsc = {},
+    intelephense = {},
     --
     -- Some languages (like rust) have entire language plugins that can be useful:
     --    https://github.com/mrcjkb/rustaceanvim
@@ -804,6 +814,7 @@ do
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
+    'blade-formatter',
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -826,7 +837,8 @@ do
     format_on_save = function(bufnr)
       -- You can specify filetypes to autoformat on save here:
       local enabled_filetypes = {
-        -- lua = true,
+        lua = true,
+        blade = true,
         -- python = true,
       }
       if enabled_filetypes[vim.bo[bufnr].filetype] then
@@ -841,6 +853,7 @@ do
     -- You can also specify external formatters in here.
     formatters_by_ft = {
       -- rust = { 'rustfmt' },
+      blade = { 'blade-formatter' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --
@@ -927,7 +940,7 @@ do
     -- the rust implementation via `'prefer_rust_with_warning'`
     --
     -- See `:help blink-cmp-config-fuzzy` for more information
-    fuzzy = { implementation = 'lua' },
+    fuzzy = { implementation = 'prefer_rust_with_warning' },
 
     -- Shows a signature help window while you type arguments for a function
     signature = { enabled = true },
@@ -948,7 +961,7 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
-  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'php', 'blade' }
   require('nvim-treesitter').install(parsers)
 
   ---@param buf integer
@@ -1023,7 +1036,7 @@ do
   -- NOTE: You can add your own plugins, configuration, etc. in `lua/custom/plugins/*.lua`.
   --
   -- For independent modules, uncomment the convenience loader:
-  -- require 'custom.plugins'
+  require 'custom.plugins'
   --
   -- `custom.plugins` automatically loads files from that directory, but their
   -- order is unspecified. If plugins depend on each other, keep them in the same
