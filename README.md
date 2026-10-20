@@ -1,5 +1,27 @@
 # kickstart.nvim
 
+## My setup
+
+Personal fork of [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) for Neovim 0.12+ on WSL2,
+with win32yank clipboard, intelephense, Blade support and Laravel Pint format-on-save.
+
+### Maintenance
+
+- **Pull kickstart updates** (from `~/.config/nvim`):
+  ```sh
+  git fetch upstream && git merge upstream/master && git push
+  ```
+  (`origin` is this fork, `upstream` is `nvim-lua/kickstart.nvim`.)
+- **Update plugins:** run `:lua vim.pack.update()` in Neovim, review and confirm,
+  then commit the updated `nvim-pack-lock.json`.
+- **Upgrade Neovim:** replace `~/.local/bin/nvim` with the newer AppImage (no `sudo` needed):
+  ```sh
+  curl -fLo ~/.local/bin/nvim https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
+  chmod +x ~/.local/bin/nvim
+  ```
+- **New machine:** clone this fork into `~/.config/nvim` and start `nvim`; plugins install
+  from the lockfile. Also install `win32yank.exe` and `fd` into `~/.local/bin`.
+
 ## Introduction
 
 A starting point for Neovim that is:
